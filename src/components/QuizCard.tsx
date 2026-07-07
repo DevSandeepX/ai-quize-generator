@@ -5,12 +5,12 @@ import {
     PlayCircle,
     Users,
 } from "lucide-react";
-import { getCategoryQuizes } from "@/app/(marketing)/quizes/page";
+import { getCategoryPublishQuizes } from "@/server/db/quiz";
 
 export function QuizCard({
     quiz,
 }: {
-    quiz: Awaited<ReturnType<typeof getCategoryQuizes>>[number];
+    quiz: Awaited<ReturnType<typeof getCategoryPublishQuizes>>[number];
 }) {
     return (
         <div className="group rounded-2xl border bg-background p-5 transition-all hover:-translate-y-1 hover:shadow-lg">
