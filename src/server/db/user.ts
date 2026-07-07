@@ -1,5 +1,5 @@
 import { PaginationProps } from "@/app/(dashboard)/dashboard/users/page";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { getGlobalTag, getIdTag, getUserTag } from "@/lib/dbCache";
 import { cacheLife, unstable_cache } from "next/cache";

@@ -2,7 +2,7 @@
 import { revalidateQuizCache } from "../cache/quiz";
 import { createQuizDb } from "../db/quiz";
 import { prisma } from "@/lib/db";
-import { QuizStatus } from "@/generated/prisma/enums";
+import { QuizStatus } from "../../generated/prisma/enums";
 import { requireAdmin } from "@/lib/requireAdmin";
 
 type QuestionInput = {
