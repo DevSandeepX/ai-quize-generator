@@ -1,13 +1,12 @@
-import React, { Suspense, use } from 'react'
+import React, { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { User2Icon } from 'lucide-react'
 import ChangeRoleModel from '@/components/ChangeRoleModel'
-import { Button, buttonVariants } from '@/components/ui/button'
-import UserApprovelForm from '@/components/UserApprovelForm'
+import { buttonVariants } from '@/components/ui/button'
 import UserApprovalDialog from '@/components/UserApprovelForm'
 import { PageHeader } from '@/components/PageHeader'
-import { getRoles, getUser } from '@/server/db/user'
+import { getRoles, getUser, getUserByDbId } from '@/server/db/user'
 interface StudentSettingsProps {
     params: Promise<{ id: string }>
 }
@@ -30,7 +29,7 @@ async function UserInformation({ userId }: {
     userId: string
 }) {
 
-    const user = await getUser(userId)
+    const user = await getUserByDbId(userId)
     if (user == null) return notFound()
     const roles = await getRoles()
 

@@ -40,6 +40,7 @@ async function getUserInternal(clerkId: string) {
     });
 }
 
+
 export async function getPaginatedUserData({
     limit = 20,
     page = 1,
@@ -124,4 +125,38 @@ async function getRolesInternal() {
             role: true
         }
     })
+}
+
+export async function getUserByDbId(id: string) {
+    "use cache";
+
+    const user = await getUserByDbIdInternal(id);
+
+    if (user) {
+        cacheTag(getUserTag(user.id, "users")); // Database ID
+        cacheTag(getIdTag(user.id, "users"));   // Database ID
+    }
+
+    return user;
+}
+
+async function getUserByDbIdInternal(id: string) {
+    return prisma.user.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            isApproved: true,
+            avatarUrl: true,
+            role: {
+                select: {
+                    id: true,
+                    role: true
+                }
+            }
+        }
+    });
 }
