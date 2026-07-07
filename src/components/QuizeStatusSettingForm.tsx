@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { actionToast } from "@/lib/actionToast";
 import { useRouter } from "next/navigation";
 import { updateQuiz } from "@/server/actions/quiz";
-import { QuizStatus } from "../generated/prisma/enums";
+import { QuizStatus } from "@/generated/prisma/enums";
 
 
 interface QuizeStatusSettingFormProps {
