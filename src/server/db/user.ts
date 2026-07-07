@@ -1,5 +1,4 @@
 import { PaginationProps } from "@/app/(dashboard)/dashboard/users/page";
-import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { getGlobalTag, getIdTag, getUserTag } from "@/lib/dbCache";
 import { cacheLife, } from "next/cache";
@@ -59,19 +58,19 @@ async function getPaginatedUserDataInternal({
     page = 1,
     search,
 }: PaginationProps) {
-    const where: Prisma.UserWhereInput = search
+    const where = search
         ? {
             OR: [
                 {
                     name: {
                         contains: search,
-                        mode: Prisma.QueryMode.insensitive,
+                        mode: "insensitive" as const,
                     },
                 },
                 {
                     email: {
                         contains: search,
-                        mode: Prisma.QueryMode.insensitive,
+                        mode: "insensitive" as const,
                     },
                 },
             ],
