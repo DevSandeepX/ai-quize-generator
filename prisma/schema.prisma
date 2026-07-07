@@ -1,0 +1,217 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  role      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+}
+
+model User {
+  id         String   @id @default(cuid())
+  clerkId    String   @unique
+  name       String
+  email      String   @unique
+  avatarUrl  String?
+  isApproved Boolean  @default(false)
+
+  roleId      String?
+  role        Role?    @relation(fields: [roleId], references: [id])
+  quizzes    Quiz[]   @relation("TeacherQuizzes")
+  prompts Prompt[]
+  attempts Attempt[]
+  activities         RecentActivity[]
+  notifications Notification[]
+
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+
+
+model Category {
+  id        String   @id @default(cuid())
+  text      String   @unique
+
+  quizes Quiz[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Quiz {
+  id             String      @id @default(cuid())
+  title          String
+  description    String?
+  totalQuestions Int         @default(0)
+  duration       Int
+  status         QuizStatus  @default(DRAFT)
+
+  teacherId       String
+  teacher         User        @relation("TeacherQuizzes", fields: [teacherId], references: [id], onDelete: Cascade)
+
+  categoryId       String?
+  category         Category?  @relation(fields: [categoryId], references: [id])
+
+  promptId         String?
+  prompt           Prompt?    @relation(fields: [promptId], references: [id])
+
+  questions        Question[]
+  attempts         Attempt[]
+  activities         RecentActivity[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Prompt {
+  id         String   @id @default(cuid())
+  text       String
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  quizzes    Quiz[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  text        String
+  explanation String?
+
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  options Option[]
+  answers UserAnswer[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean  @default(false)
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answers UserAnswer[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+
+
+model Attempt {
+  id          String    @id @default(cuid())
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  quizId       String
+  quiz         Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  score        Int       @default(0)
+  startedAt    DateTime  @default(now())
+  submittedAt  DateTime?
+
+  answers       UserAnswer[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+enum ActivityType {
+  USER_JOINED
+  QUIZ_GENERATED
+  QUIZ_PUBLISHED
+  QUIZ_UPDATED
+  QUIZ_DELETED
+  QUIZ_ATTEMPTED
+  USER_APPROVED
+}
+
+model RecentActivity {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  title       String
+  description String?
+
+  userId       String?
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  quizId        String?
+  quiz          Quiz?        @relation(fields: [quizId], references: [id], onDelete: SetNull)
+
+  metadata     Json?
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  title       String
+  message     String
+  type        NotificationType @default(INFO)
+
+  isRead      Boolean          @default(false)
+
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  link         String?
+
+  metadata     Json?
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model UserAnswer {
+  id          String   @id @default(cuid())
+
+  attemptId   String
+  attempt     Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  questionId  String
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  optionId    String?
+  option       Option?  @relation(fields: [optionId], references: [id], onDelete: SetNull)
+
+  isCorrect   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
